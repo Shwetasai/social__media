@@ -1,0 +1,6 @@
+__pycache__
+__pycache__/
+env
+
+*/migrations/*
+!*/migrations/__init__.py
