@@ -4,10 +4,6 @@ from rest_framework import status
 from django.contrib.auth.models import User
 from .models import CustomUser
 from .serializers import CustomUserSerializer,UserLoginSerializer
-from rest_framework_simplejwt.views import TokenObtainPairView
-from rest_framework.permissions import AllowAny
-from django.contrib.auth import authenticate
-from rest_framework_simplejwt.tokens import RefreshToken
 
 
 class CustomUserCreateView(APIView):
@@ -32,7 +28,7 @@ class CustomUserCreateView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 
-class CustomTokenObtainPairView(APIView):
+class UserLoginView(APIView):
 
     def post(self, request, *args, **kwargs):
         serializer = TokenObtainPairSerializer(data=request.data)
@@ -44,7 +40,7 @@ class CustomTokenObtainPairView(APIView):
 
 from rest_framework_simplejwt.tokens import AccessToken
 
-class UserLoginView(APIView):
+'''class UserLoginView(APIView):
         
     def post(self, request):
         serializer = UserLoginSerializer(data=request.data)
@@ -56,7 +52,7 @@ class UserLoginView(APIView):
             })
         else:
             print("serializer errors", serializer.errors)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)'''
 
 
 

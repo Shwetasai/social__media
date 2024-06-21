@@ -5,3 +5,7 @@ env
 */migrations/*
 !*/migrations/__init__.py
 db.sqlite3
+*.png
+# Ignore the media folder
+media/
+post_images/
