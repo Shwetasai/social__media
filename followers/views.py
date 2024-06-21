@@ -39,5 +39,20 @@ class CustomFollowUserView(APIView):
         else:
             return Response({"error":"Please provide valid data"}, status=status.HTTP_400_BAD_REQUEST)
       
+class FollowersListView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, id):
+        user = get_object_or_404(CustomUser, id=id)
+        serializer = FollowersListSerializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class FollowingListView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, id):
+        user = get_object_or_404(CustomUser, id=id)
+        serializer = FollowingListSerializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
