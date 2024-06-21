@@ -42,18 +42,33 @@ class CustomTokenObtainPairView(APIView):
         return Response(serializer.validated_data, status=status.HTTP_200_OK)
 
 
+from rest_framework_simplejwt.tokens import AccessToken
+
 class UserLoginView(APIView):
         
     def post(self, request):
         serializer = UserLoginSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.validated_data['user']
-            refresh = RefreshToken.for_user(user)
+            access_token = AccessToken.for_user(user)
             return Response({
-                'refresh': str(refresh),
-                'access': str(refresh.access_token),
+                'access': str(access_token),
             })
         else:
-            print("serializer errors",serializer.errors)
+            print("serializer errors", serializer.errors)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+
+
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+
+class EchoAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        # Retrieve and return the payload
+        payload = request.data
+        return Response(payload)

@@ -21,6 +21,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'Users',
+    'followers',
+    
     
 ]
 
@@ -110,8 +112,6 @@ REST_FRAMEWORK = {
     ],
 }
 
-SIMPLE_JWT = {
-    'AUTH_HEADER_TYPES': ('JWT',),
-}
+
 
 AUTH_USER_MODEL = 'Users.CustomUser'

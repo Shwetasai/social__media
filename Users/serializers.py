@@ -48,11 +48,8 @@ class UserLoginSerializer(serializers.Serializer):
             user = authenticate(request=self.context.get('request'), email=email, password=password)
             if user is None:
                 raise serializers.ValidationError('Invalid credentials', code='authorization')
-        refresh = RefreshToken.for_user(user) 
-        return {
-            'user': user,
-            'refresh': str(refresh),
-            'access': str(refresh.access_token),
-            'id': user.id,
-            'email': user.email,
-        }
+            return {
+                'user': user,
+                'id': user.id,
+                'email': user.email,
+            }
