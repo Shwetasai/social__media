@@ -29,3 +29,24 @@ class FollowerSerializer(serializers.ModelSerializer):
         )
         return new_follower
         
+class FollowersListSerializer(serializers.ModelSerializer):
+    followers = serializers.SerializerMethodField()
+
+    class Meta:
+        model = CustomUser
+        fields = ['followers']
+
+    def get_followers(self, obj):
+        followers = obj.followers.all()
+        return FollowerSerializer(followers, many=True).data
+
+class FollowingListSerializer(serializers.ModelSerializer):
+    following = serializers.SerializerMethodField()
+
+    class Meta:
+        model = CustomUser
+        fields = ['following']
+
+    def get_following(self, obj):
+        following = obj.following.all()
+        return FollowerSerializer(following, many=True).data

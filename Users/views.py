@@ -61,7 +61,7 @@ class UserLoginView(APIView):
 
 
 
-from rest_framework.views import APIView
+'''from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
@@ -71,4 +71,4 @@ class EchoAPIView(APIView):
     def post(self, request):
         # Retrieve and return the payload
         payload = request.data
-        return Response(payload)
+        return Response(payload)'''
