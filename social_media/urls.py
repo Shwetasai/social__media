@@ -7,6 +7,7 @@ urlpatterns = [
     path('api/Users/', include('Users.urls')),
     path('api/followers/', include('followers.urls')),
     path('api/posts/', include('posts.urls')),
+    path('api/comments/',include('comments.urls')),
     
 ]
     
