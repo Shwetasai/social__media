@@ -10,9 +10,9 @@ class ReplySerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    replies = ReplySerializer(many=True, read_only=True)
+    
 
     class Meta:
         model = Comment
-        fields = ['id', 'post', 'text', 'created_at', 'replies']
+        fields = ['id', 'post', 'text', 'created_at']
 

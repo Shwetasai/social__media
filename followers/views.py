@@ -6,6 +6,8 @@ from .serializers import FollowerSerializer
 from .models import Followers,CustomUser
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
+from django.shortcuts import get_object_or_404
+from .serializers import FollowersListSerializer, FollowingListSerializer
 
 
 class CustomFollowUserView(APIView):
@@ -33,7 +35,7 @@ class CustomFollowUserView(APIView):
             follow_instance = Followers.objects.filter(follower=follower, following=following).first()
             if follow_instance:
                 follow_instance.delete()
-                return Response({'message': 'Unfollowed successfully'}, status=status.HTTP_204_NO_CONTENT)
+                return Response({'message': 'Unfollowed successfully'}, status=status.HTTP_200_OK)
             else:
                 return Response({'error': 'Not following'}, status=status.HTTP_400_BAD_REQUEST)
         else:

@@ -34,9 +34,9 @@ class PostmanageAPIView(APIView):
 
     def delete(self, request, id):
         post = get_object_or_404(Post, id=id, user=request.user)
-        post.tags.clear()
+        #post.tags.clear()
         post.delete()
-        return Response({'message': "deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+        return Response({'message': "deleted successfully"}, status=status.HTTP_200_OK)
 
 class AddTagToPostView(APIView):
     permission_classes = [IsAuthenticated]
@@ -44,5 +44,5 @@ class AddTagToPostView(APIView):
     def post(self, request, id):
         post = get_object_or_404(Post, id=id)
         tag_ids = request.data.get('tag_ids', [])
-        post.tags.add(*tag_ids)
+        #post.tags.add(*tag_ids)
         return Response({'status': 'tags added'}, status=status.HTTP_200_OK)
