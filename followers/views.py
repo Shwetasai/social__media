@@ -2,12 +2,10 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import FollowerSerializer 
 from .models import Followers,CustomUser
-from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
-from .serializers import FollowersListSerializer, FollowingListSerializer
+from .serializers import FollowersListSerializer, FollowingListSerializer,FollowerSerializer
 
 
 class CustomFollowUserView(APIView):

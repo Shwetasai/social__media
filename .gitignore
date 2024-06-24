@@ -9,3 +9,5 @@ db.sqlite3
 # Ignore the media folder
 media/
 post_images/
+media/
+post_images/

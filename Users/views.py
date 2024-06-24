@@ -1,9 +1,8 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from django.contrib.auth.models import User
 from .models import CustomUser
-from .serializers import CustomUserSerializer,UserLoginSerializer,TokenObtainPairSerializer
+from .serializers import CustomUserSerializer,UserLoginSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django.core.mail import send_mail
 from django.conf import settings
@@ -12,7 +11,7 @@ import json
 from rest_framework.permissions import AllowAny
 from django.utils.http import urlsafe_base64_decode
 from rest_framework_simplejwt.tokens import AccessToken
-
+#from rest_framework_simplejwt.tokens import RefreshToken
 class CustomUserCreateView(APIView):
 
     def post(self, request, *args, **kwargs): 
@@ -35,12 +34,10 @@ class CustomUserCreateView(APIView):
                 'password': password,
             }
         encoded_user_data = base64.urlsafe_b64encode(json.dumps(user_data).encode()).decode()
-        print("Encoded User Data:", encoded_user_data)
 
          
             # Send verification email
         verification_link = f"{request.scheme}://{request.get_host()}/api/Users/verify/?data={encoded_user_data}"
-        print(f"Verification Link: {verification_link}")
         send_mail(
                 subject='Verify your email',
                 message=f"Click the link to verify your email and complete registration: {verification_link}",
@@ -48,11 +45,10 @@ class CustomUserCreateView(APIView):
                 recipient_list=[email],
                 fail_silently=False,
             )
-        print(f"Verification email sent to {email}")
 
         return Response({
                 "message": "Verification email sent. Please check your email to complete registration.",
-                'username': username
+                
             }, status=status.HTTP_201_CREATED)
     
 
@@ -60,7 +56,6 @@ class CustomUserCreateView(APIView):
 
     def get(self, request, *args, **kwargs):
         encoded_user_data = request.query_params.get('data')
-        print(f"Encoded User Data from URL: {encoded_user_data}")
         if not encoded_user_data:
             
             return Response({"error": "Invalid verification link."}, status=status.HTTP_400_BAD_REQUEST)
@@ -89,12 +84,14 @@ class UserLoginView(APIView):
         if login_serializer.is_valid():
             user = login_serializer.validated_data['user']
             access_token = AccessToken.for_user(user)
+            #refresh_token = RefreshToken.for_user(user)
             return Response({
                 'access': str(access_token),
+                #'refresh': str(refresh_token),
                 'email':user.email
             }, status=status.HTTP_200_OK)
+        return Response(login_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
-        # If both serializers are invalid, return errors
         errors = {}
         if token_serializer.errors:
             errors['token_errors'] = token_serializer.errors

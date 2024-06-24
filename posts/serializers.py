@@ -1,15 +1,15 @@
 from rest_framework import serializers
 from .models import Post
 from Users.models import CustomUser
-from .models import Post, Tag
+
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Tag
+        model = CustomUser
         fields = ['id', 'name']
 
 class PostSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True, read_only=True)
-    tag_ids = serializers.PrimaryKeyRelatedField(queryset=Tag.objects.all(), many=True, write_only=True)
+    tag_ids = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all(), many=True, write_only=True)
     
     class Meta:
         model = Post

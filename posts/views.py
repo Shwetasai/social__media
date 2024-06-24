@@ -5,8 +5,9 @@ from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 from .serializers import PostSerializer
 from .models import Post
-
+#from rest_framework.authentication import TokenAuthentication
 class PostCreateAPIView(APIView):
+    #authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
@@ -17,6 +18,7 @@ class PostCreateAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class PostManageAPIView(APIView):
+    #authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
     def get(self, request, id):
