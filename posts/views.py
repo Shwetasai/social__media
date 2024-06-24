@@ -16,7 +16,7 @@ class PostCreateAPIView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class PostmanageAPIView(APIView):
+class PostManageAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, id):
@@ -34,15 +34,15 @@ class PostmanageAPIView(APIView):
 
     def delete(self, request, id):
         post = get_object_or_404(Post, id=id, user=request.user)
-        #post.tags.clear()
+        post.tags.clear()
         post.delete()
         return Response({'message': "deleted successfully"}, status=status.HTTP_200_OK)
 
-class AddTagToPostView(APIView):
+'''class AddTagToPostView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, id):
         post = get_object_or_404(Post, id=id)
         tag_ids = request.data.get('tag_ids', [])
-        #post.tags.add(*tag_ids)
-        return Response({'status': 'tags added'}, status=status.HTTP_200_OK)
+        post.tags.add(*tag_ids)
+        return Response({'status': 'tags added'}, status=status.HTTP_200_OK)'''
