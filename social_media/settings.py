@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'followers',
     'posts',
     'comments',
+    'channels',
 ]
 
 MIDDLEWARE = [
@@ -64,6 +65,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'social_media.wsgi.application'
 
+ASGI_APPLICATION = 'social_media.asgi.application'
 # Database configuration
 DATABASES = {
     'default': {

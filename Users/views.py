@@ -11,7 +11,7 @@ import json
 from rest_framework.permissions import AllowAny
 from django.utils.http import urlsafe_base64_decode
 from rest_framework_simplejwt.tokens import AccessToken
-#from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.tokens import RefreshToken
 class CustomUserCreateView(APIView):
 
     def post(self, request, *args, **kwargs): 
@@ -84,10 +84,10 @@ class UserLoginView(APIView):
         if login_serializer.is_valid():
             user = login_serializer.validated_data['user']
             access_token = AccessToken.for_user(user)
-            #refresh_token = RefreshToken.for_user(user)
+            refresh_token = RefreshToken.for_user(user)
             return Response({
                 'access': str(access_token),
-                #'refresh': str(refresh_token),
+                'refresh': str(refresh_token),
                 'email':user.email
             }, status=status.HTTP_200_OK)
         return Response(login_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
