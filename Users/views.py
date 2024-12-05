@@ -1,15 +1,17 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from django.contrib.auth.models import User
 from .models import CustomUser
 from .serializers import CustomUserSerializer,UserLoginSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
+from django.core.mail import send_mail
+from django.conf import settings
+import base64
+import json
 from rest_framework.permissions import AllowAny
-from django.contrib.auth import authenticate
-from rest_framework_simplejwt.tokens import RefreshToken
-
-
+from django.utils.http import urlsafe_base64_decode
+from rest_framework_simplejwt.tokens import AccessToken
+#from rest_framework_simplejwt.tokens import RefreshToken
 class CustomUserCreateView(APIView):
 
     def post(self, request, *args, **kwargs): 
@@ -18,57 +20,84 @@ class CustomUserCreateView(APIView):
         password = request.data.get('password')
 
         if not email or not username or not password:
-            return Response({'error':'all fields are require.'},status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'All fields are required.'}, status=status.HTTP_400_BAD_REQUEST)
         if CustomUser.objects.filter(username=username).exists():
-            return Response({'error':'username already exists.'},status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'Username already exists.'}, status=status.HTTP_400_BAD_REQUEST)
         if CustomUser.objects.filter(email=email).exists():
-            return Response({'error':'email already exists.'},status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'Email already exists.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        serializer=CustomUserSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            
+            # Encode user data for email verification
+        user_data = {
+                'email': email,
+                'username': username,
+                'password': password,
+            }
+        encoded_user_data = base64.urlsafe_b64encode(json.dumps(user_data).encode()).decode()
+
+         
+            # Send verification email
+        verification_link = f"{request.scheme}://{request.get_host()}/api/Users/verify/?data={encoded_user_data}"
+        send_mail(
+                subject='Verify your email',
+                message=f"Click the link to verify your email and complete registration: {verification_link}",
+                from_email=settings.EMAIL_HOST_USER,
+                recipient_list=[email],
+                fail_silently=False,
+            )
+
+        return Response({
+                "message": "Verification email sent. Please check your email to complete registration.",
+                
+            }, status=status.HTTP_201_CREATED)
     
 
-class CustomTokenObtainPairView(APIView):
-
-    def post(self, request, *args, **kwargs):
-        serializer = TokenObtainPairSerializer(data=request.data)
-        if serializer.is_valid():
-            return Response(serializer.validated_data, status=status.HTTP_200_OK)
-
-        return Response(serializer.validated_data, status=status.HTTP_200_OK)
 
 
-from rest_framework_simplejwt.tokens import AccessToken
+    def get(self, request, *args, **kwargs):
+        encoded_user_data = request.query_params.get('data')
+        if not encoded_user_data:
+            
+            return Response({"error": "Invalid verification link."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Decode user data
+        decoded_user_data = json.loads(base64.urlsafe_b64decode(encoded_user_data).decode())
+        email = decoded_user_data["email"]
+        username = decoded_user_data["username"]
+        password = decoded_user_data["password"]
+       
+
+        # Save user data to database
+        user = CustomUser.objects.filter(email=email).exists()
+        if not user:
+            user = CustomUser.objects.create_user(email=email, username=username, password=password)
+        user.is_email_verified = True
+        user.save()
+        return Response({"message": "Registration successful."}, status=status.HTTP_201_CREATED)
 
 class UserLoginView(APIView):
+
+    def post(self, request, *args, **kwargs):
         
-    def post(self, request):
-        serializer = UserLoginSerializer(data=request.data)
-        if serializer.is_valid():
-            user = serializer.validated_data['user']
+        # Handle user login functionality
+        login_serializer = UserLoginSerializer(data=request.data)
+        if login_serializer.is_valid():
+            user = login_serializer.validated_data['user']
             access_token = AccessToken.for_user(user)
+            #refresh_token = RefreshToken.for_user(user)
             return Response({
                 'access': str(access_token),
-            })
-        else:
-            print("serializer errors", serializer.errors)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                #'refresh': str(refresh_token),
+                'email':user.email
+            }, status=status.HTTP_200_OK)
+        return Response(login_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        errors = {}
+        if token_serializer.errors:
+            errors['token_errors'] = token_serializer.errors
+        if login_serializer.errors:
+            errors['login_errors'] = login_serializer.errors
+        
+        return Response(errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-
-
-'''from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-
-class EchoAPIView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request):
-        # Retrieve and return the payload
-        payload = request.data
-        return Response(payload)'''
