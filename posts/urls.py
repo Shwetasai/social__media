@@ -8,4 +8,3 @@ urlpatterns = [
 
 ]
 
-#path('add-tag/<int:id>/', AddTagToPostView.as_view(), name='add-tag-to-post'),

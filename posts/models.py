@@ -1,6 +1,8 @@
 from django.db import models
 from Users.models import CustomUser
-
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+#from .models import Post, Notification
 
 class Tag(models.Model):
     name = models.CharField(max_length=30)
@@ -26,3 +28,16 @@ class Post(models.Model):
 
     def __str__(self):
         return self.name'''
+
+from django.db import models
+from Users.models import CustomUser
+
+class Notification(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='post_notifications')
+    message = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+    read = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.user.email
+
