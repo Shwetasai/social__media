@@ -1,9 +1,10 @@
 from django.apps import AppConfig
 
 
-class FollowsConfig(AppConfig):
+class CommentsConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'followers'
+    name = 'comments'
 
     def ready(self):
-        import followers.signals
+        import comments.signals
+

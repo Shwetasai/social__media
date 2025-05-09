@@ -1,9 +1,11 @@
 from django.apps import AppConfig
 
 
-class FollowsConfig(AppConfig):
+class PostsConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'followers'
+    name = 'posts'
+
+
 
     def ready(self):
-        import followers.signals
+        import posts.signals
